@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acme-mcp-server"
+version = "0.1.0"
+description = "MCP server (FastMCP, stdio) exposing safe, production-minded tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Your Team", email = "dev@example.com" }]
+
+# Runtime deps (server only)
+
+
+dependencies = [
+  "fastmcp>=2.0.0",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "httpx>=0.27",
+  "redis>=5.0.0",
+  "jsonschema>=4.21.1",
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+]
+
+
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.5.5",
+  "black>=24.8.0",
+  "mypy>=1.11.1",
+  "types-redis",
+  "types-requests",
+]
+
+# If you later want a CLI entry point:
+# [project.scripts]
+# mcp-server = "server.main:cli"
+
+[tool.setuptools]
+# Packages are simple dirs with __init__.py; no src-layout for now.
+packages = ["server", "app", "app.services"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-select = ["E", "F", "I"]         # pyflakes/pycodestyle/imports
+ignore = ["E203"]                        # allow black-compatible slicing
+exclude = [".venv", "build", "dist"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+disallow_incomplete_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+exclude = ["build", "dist", "\\.venv"]
