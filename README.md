@@ -5,31 +5,6 @@
 > **Purpose**  
 > This repository implements a **Model Context Protocol (MCP)** server in **Python**, with both **stdio** and **Streamable HTTP** transports. It exposes a practical set of **tools** (filesystem, HTTP fetch with SSRF guards, JSON Schema validation, append‑only artifacts, and optional Redis KV) using a production‑minded architecture: clean separation of concerns, strong input validation, explicit security controls, and a single **tool registry** powering **both** transports.
 
----
-
-## Contents
-
-- What is MCP? Why this server?
-- Architecture Overview
-- Transports
-  - stdio (local)
-  - Streamable HTTP (remote)
-- Security Model
-- Tools Exposed
-- Configuration
-- Quick Start
-  - Run stdio transport
-  - Run HTTP transport
-- How Agents Use This Server
-- Add a New Tool (Contributor Guide)- Testing, Linting, CI
-- Observability & Auditing
-- Design Rationale
-- Folder Structure
-- FAQ
-- References
-
----
-
 ## What is MCP? Why this server?
 
 **Model Context Protocol (MCP)** is an open, JSON‑RPC‑based protocol that lets AI clients/hosts discover and invoke **tools** and read **resources** from **servers** in a standard way. MCP defines how to **list** tools (names, descriptions, input schemas) and **call** them over a transport (stdio for local or Streamable HTTP for remote).
@@ -371,28 +346,6 @@ HTTP safety follows MCP transport advice: Origin checks and auth mitigate DNS‑
 KV optionality keeps the PoC lightweight but allows ephemeral idempotency, rate limiting, and multi‑turn scratchpad when needed.
 
 
-## Folder Structure
-```
-server/            # transports + registry (no business logic)
-  main.py          # stdio entry (FastMCP)
-  http_app.py      # Streamable HTTP entry (FastAPI)
-  registry.py      # tool specs + handlers + dispatch/list helpers
-
-server/tools/      # Pydantic input models only (thin)
-  files.py, http_fetch.py, json_validate.py, artifacts.py, kv.py
-
-app/               # "application" layer: config + services + DI
-  config.py        # env settings
-  di.py            # container wiring (services)
-  logging.py       # redaction helpers
-  services/        # business logic backing the tools
-    filesystem.py, httpclient.py, validator.py, artifacts.py, kvstore.py
-
-tests/             # pytest unit tests
-scripts/           # setup/run/test scripts
-.github/workflows/ # ci.yml (make test on push/PR)
-
-```
 ## FAQ
 Q: Can I use this server directly from VS Code / Copilot Agent Mode?
 A: Yes. For stdio, VS Code can launch it as a subprocess. For HTTP, configure the URL and auth header; VS Code + other hosts can connect to remote MCP servers. See: <https://code.visualstudio.com/docs/copilot/customization/mcp-servers>
