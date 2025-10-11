@@ -2,8 +2,10 @@
 import asyncio
 import sys
 from pathlib import Path
-from app.config import Settings
+
 import pytest
+
+from app.config import Settings
 
 pytestmark = pytest.mark.asyncio
 
@@ -23,12 +25,13 @@ async def _start_stdio_client(tmp_path: Path):
     We run the server as: <python> -m server.main (module-safe; works with package imports).
     """
     from fastmcp import Client
+
     project_root = _project_root()
 
     # STDIO servers don't inherit your shell env; pass what you need explicitly.
     env = {
         "SANDBOX_ROOT": str(tmp_path),  # per-test sandbox
-        "REDIS_URL": "",                # disable kv_* for hermetic tests
+        "REDIS_URL": "",  # disable kv_* for hermetic tests
         "LOG_LEVEL": "INFO",
         "PYTHONPATH": str(project_root),  # ensure package imports resolve
     }
@@ -79,7 +82,7 @@ async def _fs_write_read_roundtrip(client):
     # Write file
     w = await _call(client, "fs_write", {"input_obj": {"path": "hello.txt", "content": "hi"}})
     # FastMCP client returns a CallToolResult object, extract the text content
-    if hasattr(w, 'content') and w.content:
+    if hasattr(w, "content") and w.content:
         w_text = w.content[0].text
     else:
         w_text = str(w)
@@ -87,7 +90,7 @@ async def _fs_write_read_roundtrip(client):
 
     # Read file
     r = await _call(client, "fs_read", {"input_obj": {"path": "hello.txt"}})
-    if hasattr(r, 'content') and r.content:
+    if hasattr(r, "content") and r.content:
         r_text = r.content[0].text
     else:
         r_text = str(r)
@@ -133,8 +136,9 @@ async def _assert_registry_consistency(client):
     We don't assume KV because we disabled REDIS_URL.
     """
     names = await _list_tool_names(client)
-    all_tools_set = set(["fs_write", "fs_read", "json_validate", 
-                     "artifact_log", "artifact_list", "http_fetch"])
+    all_tools_set = set(
+        ["fs_write", "fs_read", "json_validate", "artifact_log", "artifact_list", "http_fetch"]
+    )
     exposed_tools_set = all_tools_set - Settings.disabled_tools()
 
     for expected in exposed_tools_set:
@@ -148,7 +152,7 @@ async def _stdio_session(tmp_path: Path):
         await _wait_ready(client)  # <-- readiness retry via ping()
         await _assert_registry_consistency(client)
         await _fs_write_read_roundtrip(client)
-        #await _json_validate_ok(client)
+        # await _json_validate_ok(client)
 
 
 async def _kill_stray_server_processes():

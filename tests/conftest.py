@@ -1,8 +1,6 @@
 # tests/conftest.py
-import os
-import sys
 import importlib
-import contextlib
+import sys
 from typing import Dict, Iterator
 
 import pytest

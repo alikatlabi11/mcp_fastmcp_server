@@ -1,6 +1,5 @@
 # tests/test_artifacts.py
 from pathlib import Path
-import json
 
 from app.services.artifacts import ArtifactService
 

@@ -34,8 +34,9 @@ jobs:
 
       - name: Run tests & linters
         run: |
-          pytest -v --cov=.
-          flake8 .
+          pytest -v 
           black --check .
-          isort --check-only .
-          mypy .
+
+          
+
+

@@ -7,13 +7,13 @@ from typing import Any, Callable, Dict, Type
 from pydantic import BaseModel
 
 from app.di import Container
+from server.tools.artifacts import ArtifactListIn, ArtifactLogIn
 
 # Import only the Pydantic input models (no business logic here)
-from server.tools.files import FsWriteIn, FsReadIn
+from server.tools.files import FsReadIn, FsWriteIn
 from server.tools.http_fetch import FetchIn
 from server.tools.json_validate import JsonValidateIn
-from server.tools.artifacts import ArtifactLogIn, ArtifactListIn
-from server.tools.kv import KvPutIn, KvGetIn
+from server.tools.kv import KvGetIn, KvPutIn
 
 
 @dataclass(frozen=True)
@@ -87,7 +87,7 @@ def build_tool_registry(container: Container) -> Dict[str, ToolSpec]:
     Build a registry once at startup using DI.
     Transport layers (STDIO/HTTP) read from this registry to expose tools.
     """
-    
+
     handlers = ToolHandlers(container)
     disabled = container.settings.disabled_tools()
     reg: Dict[str, ToolSpec] = {}
@@ -95,65 +95,88 @@ def build_tool_registry(container: Container) -> Dict[str, ToolSpec]:
     def maybe_add(name: str, spec: ToolSpec):
         if name not in disabled:
             reg[name] = spec
-            
-    maybe_add("fs_write", ToolSpec(
-        name="fs_write",
-        description="Write a text file under sandbox root",
-        input_model=FsWriteIn,
-        handler=handlers.fs_write,
-    ))
 
-    maybe_add("fs_read", ToolSpec(
-        name="fs_read",
-        description="Read a text file under sandbox root",
-        input_model=FsReadIn,
-        handler=handlers.fs_read,
-    ))
+    maybe_add(
+        "fs_write",
+        ToolSpec(
+            name="fs_write",
+            description="Write a text file under sandbox root",
+            input_model=FsWriteIn,
+            handler=handlers.fs_write,
+        ),
+    )
 
-    maybe_add("http_fetch", ToolSpec(
-        name="http_fetch",
-        description="Fetch a URL with allowlist, timeouts, and SSRF safeguards",
-        input_model=FetchIn,
-        handler=handlers.http_fetch,
-    ))
+    maybe_add(
+        "fs_read",
+        ToolSpec(
+            name="fs_read",
+            description="Read a text file under sandbox root",
+            input_model=FsReadIn,
+            handler=handlers.fs_read,
+        ),
+    )
 
-    maybe_add("json_validate", ToolSpec(
-        name="json_validate",
-        description="Validate a JSON instance against a JSON Schema",
-        input_model=JsonValidateIn,
-        handler=handlers.json_validate,
-    ))
+    maybe_add(
+        "http_fetch",
+        ToolSpec(
+            name="http_fetch",
+            description="Fetch a URL with allowlist, timeouts, and SSRF safeguards",
+            input_model=FetchIn,
+            handler=handlers.http_fetch,
+        ),
+    )
 
-    maybe_add("artifact_log", ToolSpec(
-        name="artifact_log",
-        description="Append an immutable artifact record",
-        input_model=ArtifactLogIn,
-        handler=handlers.artifact_log,
-    ))
+    maybe_add(
+        "json_validate",
+        ToolSpec(
+            name="json_validate",
+            description="Validate a JSON instance against a JSON Schema",
+            input_model=JsonValidateIn,
+            handler=handlers.json_validate,
+        ),
+    )
 
-    maybe_add("artifact_list", ToolSpec(
-        name="artifact_list",
-        description="List recent artifact records for a tag",
-        input_model=ArtifactListIn,
-        handler=handlers.artifact_list,
-    ))
+    maybe_add(
+        "artifact_log",
+        ToolSpec(
+            name="artifact_log",
+            description="Append an immutable artifact record",
+            input_model=ArtifactLogIn,
+            handler=handlers.artifact_log,
+        ),
+    )
+
+    maybe_add(
+        "artifact_list",
+        ToolSpec(
+            name="artifact_list",
+            description="List recent artifact records for a tag",
+            input_model=ArtifactListIn,
+            handler=handlers.artifact_list,
+        ),
+    )
 
     if container.settings.REDIS_URL:
-        maybe_add("kv_put", ToolSpec(
-            name="kv_put",
-            description="Put a key/value pair with optional TTL",
-            input_model=KvPutIn,
-            handler=handlers.kv_put,
-        ))
-        maybe_add("kv_get", ToolSpec(
-            name="kv_get",
-            description="Get the value for a key",
-            input_model=KvGetIn,
-            handler=handlers.kv_get,
-        ))
+        maybe_add(
+            "kv_put",
+            ToolSpec(
+                name="kv_put",
+                description="Put a key/value pair with optional TTL",
+                input_model=KvPutIn,
+                handler=handlers.kv_put,
+            ),
+        )
+        maybe_add(
+            "kv_get",
+            ToolSpec(
+                name="kv_get",
+                description="Get the value for a key",
+                input_model=KvGetIn,
+                handler=handlers.kv_get,
+            ),
+        )
 
     return reg
-
 
 
 def list_tools_payload(registry: Dict[str, ToolSpec]) -> Dict[str, Any]:

@@ -1,11 +1,11 @@
 import ipaddress
+import logging
 import socket
 from dataclasses import dataclass
-from typing import Dict, Iterable, Optional, Set, Tuple, List
+from typing import Dict, Optional, Set, Tuple
 from urllib.parse import urlparse
-import logging
-import httpx
 
+import httpx
 
 # ---------- SSRF / Net utilities ----------
 
@@ -16,6 +16,7 @@ PRIVATEISH_FLAGS = (
     "is_reserved",
     "is_multicast",
 )
+
 
 def _ip_is_privateish(ip: str) -> bool:
     """
@@ -75,15 +76,16 @@ HOP_BY_HOP_HEADERS = {
 }
 
 ALLOWED_CONTENT_TYPES = {
-            "text/html",
-            "text/plain",
-            "application/json",
-            "application/xhtml+xml",
-            "application/rss+xml",
-            "application/atom+xml",
-            "application/xml",
-            "application/atom+xml; charset=UTF-8"
-        }
+    "text/html",
+    "text/plain",
+    "application/json",
+    "application/xhtml+xml",
+    "application/rss+xml",
+    "application/atom+xml",
+    "application/xml",
+    "application/atom+xml; charset=UTF-8",
+}
+
 
 @dataclass
 class SafeHttpConfig:
@@ -99,11 +101,10 @@ class SafeHttpConfig:
     follow_redirects: bool = True
     # Content policy
     allowed_content_types: Set[str] = None
-        
-    
-    max_body_chars: int = 100_000   # safety cap for text decoding
+
+    max_body_chars: int = 100_000  # safety cap for text decoding
     # Extraction / normalization
-    extract_text: bool = True       # return cleaned text for HTML
+    extract_text: bool = True  # return cleaned text for HTML
     max_extracted_chars: int = 10_000
     # User agent
     user_agent: str = "MCP-SafeHttp/1.0 (+https://example.invalid/mcp)"
@@ -211,7 +212,9 @@ class SafeHttpService:
         base = content_type.split(";", 1)[0].strip().lower()
         print("Base content type:", base)
         logging.debug("Base content type: %s", base)
-        return any(base == allowed or base.startswith(allowed + "+") for allowed in ALLOWED_CONTENT_TYPES)
+        return any(
+            base == allowed or base.startswith(allowed + "+") for allowed in ALLOWED_CONTENT_TYPES
+        )
 
     @staticmethod
     def _guess_title_from_html(html: str) -> Optional[str]:
@@ -260,6 +263,7 @@ class SafeHttpService:
             # Prefer bs4 if available for better extraction
             try:
                 from bs4 import BeautifulSoup  # type: ignore
+
                 soup = BeautifulSoup(text, "html.parser")
                 for tag in soup(["script", "style", "noscript"]):
                     tag.decompose()
@@ -267,7 +271,9 @@ class SafeHttpService:
                 main = soup.find("main") or soup.find("article") or soup.body or soup
                 extracted = " ".join(main.stripped_strings)
             except Exception:
-                extracted = self._strip_html_naive(text, self.cfg.max_extracted_chars * 2)  # pre-trim
+                extracted = self._strip_html_naive(
+                    text, self.cfg.max_extracted_chars * 2
+                )  # pre-trim
 
             out["title"] = title[:200].strip()
             out["text"] = extracted[: self.cfg.max_extracted_chars].strip()
@@ -289,7 +295,7 @@ class SafeHttpService:
         method: str = "GET",
         headers: Optional[Dict[str, str]] = None,
         body: Optional[bytes | str] = None,
-        want_text: bool = True,         # decode to text (UTF-8/HTTP charset); else return bytes (truncated)
+        want_text: bool = True,  # decode to text (UTF-8/HTTP charset); else return bytes (truncated)
         extract_readable: bool = True,  # for HTML, return 'extracted' text alongside raw/truncated body
     ) -> Dict[str, object]:
         """
@@ -325,20 +331,27 @@ class SafeHttpService:
             content = body if isinstance(body, (bytes, bytearray)) else str(body).encode("utf-8")
 
         timeout = httpx.Timeout(self.cfg.timeout_sec)
-        limits = httpx.Limits(max_keepalive_connections=self.cfg.max_keepalive, max_connections=self.cfg.max_connections)
+        limits = httpx.Limits(
+            max_keepalive_connections=self.cfg.max_keepalive,
+            max_connections=self.cfg.max_connections,
+        )
 
         verify_ssl = self.cfg.verify_ssl
         # verify: True (system trust), False (insecure), or str path to CA bundle
 
         # Stream + follow redirects
-        with httpx.Client(timeout=timeout, limits=limits, follow_redirects=self.cfg.follow_redirects, verify=False) as client:
+        with httpx.Client(
+            timeout=timeout, limits=limits, follow_redirects=self.cfg.follow_redirects, verify=False
+        ) as client:
             # Early content-length check via HEAD (best-effort, only for GET)
             if method == "GET":
                 try:
                     head = client.request("HEAD", url, headers=safe_headers)
                     cl = head.headers.get("content-length")
                     if cl and cl.isdigit() and int(cl) > self.cfg.max_bytes:
-                        raise ValueError(f"Response too large (Content-Length={cl} > {self.cfg.max_bytes})")
+                        raise ValueError(
+                            f"Response too large (Content-Length={cl} > {self.cfg.max_bytes})"
+                        )
                 except Exception:
                     # HEAD may be blocked; continue with GET
                     pass
@@ -373,7 +386,9 @@ class SafeHttpService:
 
             # Decode to text if requested
             text_body: Optional[str] = None
-            encoding = resp.encoding  # httpx tries to sniff from headers; else chardet/charset-normalizer
+            encoding = (
+                resp.encoding
+            )  # httpx tries to sniff from headers; else chardet/charset-normalizer
             if want_text:
                 try:
                     text_body = raw.decode(encoding or "utf-8", errors="replace")
@@ -390,7 +405,9 @@ class SafeHttpService:
                 extracted = self._extract_text(ctype, text_body or "")
 
             # Return lower-cased headers for consistency; cap extremely long header values
-            safe_resp_headers = {k.lower(): (v[:4096] if isinstance(v, str) else v) for k, v in resp.headers.items()}
+            safe_resp_headers = {
+                k.lower(): (v[:4096] if isinstance(v, str) else v) for k, v in resp.headers.items()
+            }
 
             return {
                 "url": final_url,

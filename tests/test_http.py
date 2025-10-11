@@ -1,8 +1,7 @@
 # tests/test_http.py
-import os
-import sys
 import importlib
-from typing import Dict, Any, List, Set
+import sys
+from typing import Any, Dict, Set
 
 import pytest
 from fastapi.testclient import TestClient
@@ -36,9 +35,7 @@ def _rpc(
 # ---------- Happy-path protocol flow ----------
 
 
-def test_initialize_ok(
-        http_client: TestClient, 
-        auth_headers: Dict[str, str]):
+def test_initialize_ok(http_client: TestClient, auth_headers: Dict[str, str]):
     r = _rpc(http_client, "initialize", id_=1, headers=auth_headers)
     assert r.status_code == 200, r.text
     body = r.json()
@@ -50,22 +47,20 @@ def test_initialize_ok(
 
 
 def test_tools_list_contains_expected(
-        http_client: TestClient, 
-        auth_headers: Dict[str, str], 
-        registry_snapshot: Dict[str, Dict]
+    http_client: TestClient, auth_headers: Dict[str, str], registry_snapshot: Dict[str, Dict]
 ):
     r = _rpc(http_client, "tools/list", id_=2, headers=auth_headers)
     assert r.status_code == 200, r.text
     body = r.json()
     tools = body["result"]["tools"]
     names_http: Set[str] = {t["name"] for t in tools}
-    names_registry: Set[str] = set(registry_snapshot.keys())
-    all_tools_set = set(["fs_write", "fs_read", "json_validate", 
-                     "artifact_log", "artifact_list", "http_fetch"])
+    #names_registry: Set[str] = set(registry_snapshot.keys())
+    all_tools_set = set(
+        ["fs_write", "fs_read", "json_validate", "artifact_log", "artifact_list", "http_fetch"]
+    )
     exposed_tools_set = all_tools_set - Settings.disabled_tools()
     # The unified registry is the single source of truth:
     assert names_http == exposed_tools_set
-
 
 
 # def test_tool_call_json_validate_ok(http_client: TestClient, auth_headers: Dict[str, str]):

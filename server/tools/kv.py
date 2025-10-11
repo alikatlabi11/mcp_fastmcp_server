@@ -1,6 +1,5 @@
 # server/tools/kv.py
 from pydantic import BaseModel, Field
-from fastmcp import FastMCP
 
 
 class KvPutIn(BaseModel):

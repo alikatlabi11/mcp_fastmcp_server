@@ -1,8 +1,10 @@
 # app/services/validator.py
 from __future__ import annotations
-from typing import Any, Dict, List, Tuple, Union
+
 import json
-from jsonschema import Draft202012Validator, Draft7Validator, Draft201909Validator
+from typing import Any, Dict, List, Union
+
+from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
 

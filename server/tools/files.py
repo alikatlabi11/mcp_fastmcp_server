@@ -1,6 +1,5 @@
 # server/tools/files.py
 from pydantic import BaseModel, Field
-from fastmcp import FastMCP
 
 
 class FsWriteIn(BaseModel):

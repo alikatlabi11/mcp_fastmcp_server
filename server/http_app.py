@@ -3,17 +3,15 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-import json
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 from app.config import Settings
 from app.di import build_container
 from server.registry import (
     build_tool_registry,
-    list_tools_payload,
     dispatch_tool_call,
+    list_tools_payload,
 )
 
 app = FastAPI(title="MCP HTTP Server", version="0.1.0")
@@ -141,6 +139,7 @@ async def mcp_endpoint(request: Request):
     return _jsonrpc_error_response(
         id_, code=-32601, message=f"Method not found: {method}", http_status=404
     )
+
 
 # ---------- Models for /status endpoint ----------
 # ✅ Origin allow‑list (done) and Bearer auth (done). [Security O...r · GitHub]

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, HttpUrl
-from fastmcp import FastMCP
 from typing import Dict, Optional
+
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class FetchIn(BaseModel):
@@ -11,6 +11,7 @@ class FetchIn(BaseModel):
 
 
 # def register_http_tools(mcp: FastMCP, http_service):
-#     @mcp.tool(name="http_fetch", description="Fetch a URL with allowlist, timeouts, and SSRF safeguards")
+#     @mcp.tool(name="http_fetch", description="Fetch a URL 
+# with allowlist, timeouts, and SSRF safeguards")
 #     def http_fetch(input: FetchIn) -> dict:
 #         return http_service.fetch(str(input.url), input.method, input.headers, input.body)

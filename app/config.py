@@ -1,9 +1,11 @@
 # app/config.py
 from pathlib import Path
 from typing import Set
+
 from pydantic_settings import BaseSettings
 
 DISABLED_TOOLS: list[str] = ["artifact_log", "json_validate"]
+
 
 class Settings(BaseSettings):
     # Filesystem sandbox
