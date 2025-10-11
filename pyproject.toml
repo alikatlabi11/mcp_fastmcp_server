@@ -7,7 +7,7 @@ name = "acme-mcp-server"
 version = "0.1.0"
 description = "MCP server (FastMCP, stdio) exposing safe, production-minded tools"
 readme = "README.md"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Ali katlabi", email = "ali.katlabi@shell.com" }]
 
