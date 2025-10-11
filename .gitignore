@@ -209,3 +209,6 @@ __marimo__/
 #ndjson 
 .ndjson
 .sandbox/
+
+Dump-Repo.ps1
+REPO_DUMP.md
