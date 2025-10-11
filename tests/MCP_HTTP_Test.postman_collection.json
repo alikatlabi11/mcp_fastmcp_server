@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "MCP HTTP Tests",
+    "_postman_id": "c5a5e4a6-2d9a-4bf7-9b43-123456789abc",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Initialize -> tools/list -> tools/call"
+  },
+  "item": [
+    {
+      "name": "initialize",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+          { "key": "Origin", "value": "{{ORIGIN}}" }
+        ],
+        "url": "{{BASE_URL}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {}\n}"
+        }
+      }
+    },
+    {
+      "name": "tools/list",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+          { "key": "Origin", "value": "{{ORIGIN}}" }
+        ],
+        "url": "{{BASE_URL}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 2,\n  \"method\": \"tools/list\",\n  \"params\": {}\n}"
+        }
+      }
+    },
+    {
+      "name": "tools/call: json_validate",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept\", \"value\": \"application/json" },
+          { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+          { "key": "Origin", "value": "{{ORIGIN}}" }
+        ],
+        "url": "{{BASE_URL}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 3,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"json_validate\",\n    \"arguments\": {\n      \"instance\": {\"n\": 1},\n      \"schema\": {\"type\": \"object\", \"properties\": {\"n\": {\"type\": \"integer\"}}, \"required\": [\"n\"]},\n      \"draft\": \"2020-12\"\n    }\n  }\n}"
+        }
+      }
+    }
+  ]
+}

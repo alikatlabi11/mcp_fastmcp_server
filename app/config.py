@@ -1,6 +1,8 @@
 # app/config.py
 from pathlib import Path
+from typing import Set
 from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     # Filesystem sandbox
@@ -10,11 +12,10 @@ class Settings(BaseSettings):
     REDIS_URL: str | None = "redis://127.0.0.1:6379/0"
 
     # HTTP safety
-    HTTP_ALLOWLIST: str = "example.com, api.github.com"
+    HTTP_ALLOWLIST: str = "https://www.google.com/, https://api.github.com/"
     HTTP_TIMEOUT_SEC: float = 10.0
     HTTP_MAX_BYTES: int = 2_000_000
 
-    
     # HTTP MCP transport
     MCP_HTTP_ENABLED: bool = True
     MCP_HTTP_HOST: str = "127.0.0.1"
@@ -22,17 +23,22 @@ class Settings(BaseSettings):
     MCP_HTTP_PATH: str = "/mcp"
 
     # Security: Bearer token and allowed origins
-    MCP_HTTP_BEARER_TOKEN: str = "change-me"         # set in .env for prod
+    MCP_HTTP_BEARER_TOKEN: str = "change-me"  # set in .env for prod
     MCP_HTTP_ALLOWED_ORIGINS: str = "http://localhost, http://127.0.0.1"
-    MCP_HTTP_ALLOW_NO_ORIGIN: bool = True            # allow non-browser clients
+    MCP_HTTP_ALLOW_NO_ORIGIN: bool = True  # allow non-browser clients
 
     # Logging
     LOG_LEVEL: str = "INFO"
 
-    
     # Artifacts (append-only audit)
-    ARTIFACTS_SUBDIR: str = "artifacts"   # under SANDBOX_ROOT
+    ARTIFACTS_SUBDIR: str = "artifacts"  # under SANDBOX_ROOT
     ARTIFACT_MAX_BYTES: int = 10_000_000  # rotate when file exceeds this size
+    
+    DISABLED_TOOLS: str = "artifact_log,json_validate"
+    
+    @property
+    def disabled_tools(self) -> Set[str]:
+        return {t.strip() for t in self.DISABLED_TOOLS.split(",") if t.strip()}
 
     class Config:
         env_file = ".env"

@@ -1,6 +1,7 @@
 # tests/test_json_validate.py
 from app.services.validator import JsonValidatorService
 
+
 def test_json_validate_ok():
     svc = JsonValidatorService()
     instance = {"items": [{"sku": "A", "qty": 2}]}
@@ -11,8 +12,10 @@ def test_json_validate_ok():
                 "type": "array",
                 "items": {
                     "type": "object",
-                    "properties": {"sku": {"type": "string"}, "qty": 
-                                   {"type": "integer", "minimum": 1}},
+                    "properties": {
+                        "sku": {"type": "string"},
+                        "qty": {"type": "integer", "minimum": 1},
+                    },
                     "required": ["sku", "qty"],
                     "additionalProperties": False,
                 },
@@ -24,14 +27,17 @@ def test_json_validate_ok():
     assert res["valid"] is True
     assert res["errors"] == []
 
+
 def test_json_validate_errors():
     svc = JsonValidatorService()
     instance = {"items": [{"sku": "A", "qty": 0}]}
     schema = {
         "type": "object",
         "properties": {
-            "items": {"type": "array", 
-                      "items": {"type": "object", "properties": {"qty": {"minimum": 1}}}}
+            "items": {
+                "type": "array",
+                "items": {"type": "object", "properties": {"qty": {"minimum": 1}}},
+            }
         },
         "required": ["items"],
     }

@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from app.config import Settings
 from app.services.filesystem import FileSystemService
 from app.services.kvstore import KvService
-from app.services.httpclient import SafeHttpService
+from app.services.httpclient import SafeHttpConfig, SafeHttpService
 from app.services.validator import JsonValidatorService
 from app.services.artifacts import ArtifactService
+
 
 @dataclass
 class Container:
@@ -16,6 +17,7 @@ class Container:
     validator_service: JsonValidatorService
     artifact_service: ArtifactService
 
+
 def build_container() -> Container:
     s = Settings()
     fs = FileSystemService(s.SANDBOX_ROOT)
@@ -23,8 +25,17 @@ def build_container() -> Container:
     kv = KvService(s.REDIS_URL) if s.REDIS_URL else None
 
     allow = {d.strip().lower() for d in s.HTTP_ALLOWLIST.split(",") if d.strip()}
-    http = SafeHttpService(allowlist_domains=allow, timeout_sec=s.HTTP_TIMEOUT_SEC, 
-                           max_bytes=s.HTTP_MAX_BYTES)
+    http = SafeHttpService(SafeHttpConfig(
+        allowlist_domains=allow,
+        verify_ssl=True,                     # or path to CA bundle; use False only for local dev
+        timeout_sec=12.0,
+        max_bytes=1_000_000,                 # 1MB hard cap per fetch
+        allowed_content_types=("text/html", "text/plain", "application/json"),
+        extract_text=True,
+        max_extracted_chars=8000,
+        user_agent="HyperD-MCP/1.0 (+yourcompany.example)",
+))
+
 
     validator = JsonValidatorService()
     artifact = ArtifactService(

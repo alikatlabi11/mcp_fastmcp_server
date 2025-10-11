@@ -5,6 +5,7 @@ import json
 from jsonschema import Draft202012Validator, Draft7Validator, Draft201909Validator
 from jsonschema.exceptions import ValidationError
 
+
 class JsonValidatorService:
     """
     Validate JSON instances against JSON Schema (default draft 2020-12).
@@ -50,7 +51,7 @@ class JsonValidatorService:
         for e in errors:
             entry = {
                 "path": to_path(e),
-                "keyword": e.validator,                # e.g., "type", "minimum"
+                "keyword": e.validator,  # e.g., "type", "minimum"
                 "message": e.message,
             }
             # Expected constraint (optional but useful)

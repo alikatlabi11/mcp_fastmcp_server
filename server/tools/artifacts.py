@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, Literal
 from pydantic import BaseModel, Field
 from fastmcp import FastMCP
 
+
 class ArtifactLogIn(BaseModel):
     tag: str = Field(..., description="Semantic tag, e.g., 'orders:create', 'errors', 'plan'")
     content: Any = Field(..., description="Serializable payload to log (redacted)")
@@ -24,27 +25,27 @@ class ArtifactListIn(BaseModel):
     )
 
 
-def register_artifact_tools(mcp: FastMCP, artifact_service):
-    @mcp.tool(
-        name="artifact_log",
-        description="Append an immutable artifact record (NDJSON) under the " \
-        "sandboxed artifacts directory.",
-    )
-    def artifact_log(input: ArtifactLogIn) -> Dict[str, Any]:
-        return artifact_service.append(
-            input.tag,
-            input.content,
-            meta=input.meta,
-            corr=input.corr,
-            actor=input.actor,
-            tool=input.tool,
-        )
+# def register_artifact_tools(mcp: FastMCP, artifact_service):
+#     @mcp.tool(
+#         name="artifact_log",
+#         description="Append an immutable artifact record (NDJSON) under the " \
+#         "sandboxed artifacts directory.",
+#     )
+#     def artifact_log(input: ArtifactLogIn) -> Dict[str, Any]:
+#         return artifact_service.append(
+#             input.tag,
+#             input.content,
+#             meta=input.meta,
+#             corr=input.corr,
+#             actor=input.actor,
+#             tool=input.tool,
+#         )
 
-    @mcp.tool(
-        name="artifact_list",
-        description="List recent artifact records for a tag (newest first by default).",
-    )
-    def artifact_list(input: ArtifactListIn) -> Dict[str, Any]:
-        return artifact_service.list(
-            input.tag, limit=input.limit, order=input.order, months_back=input.months_back
-        )
+#     @mcp.tool(
+#         name="artifact_list",
+#         description="List recent artifact records for a tag (newest first by default).",
+#     )
+#     def artifact_list(input: ArtifactListIn) -> Dict[str, Any]:
+#         return artifact_service.list(
+#             input.tag, limit=input.limit, order=input.order, months_back=input.months_back
+#         )

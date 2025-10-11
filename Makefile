@@ -1,7 +1,7 @@
 # ---- Configuration ----------------------------------------------------------
-PYTHON := python3
+PYTHON := python
 VENV := .venv
-SCRIPTS := $(VENV)/scripts
+SCRIPTS := $(VENV)/Scripts
 PIP := $(SCRIPTS)/pip
 PY := $(SCRIPTS)/python
 PYTEST := $(SCRIPTS)/pytest
@@ -28,7 +28,7 @@ help:
 setup: venv install
 venv:
 	@test -d $(VENV) || $(PYTHON) -m venv $(VENV)
-	@$(PIP) install --upgrade pip wheel setuptools
+	@$(PY) -m pip install --upgrade pip wheel setuptools
 
 install:
 	@$(PIP) install -r requirements.txt
@@ -37,8 +37,8 @@ install:
 run:
 	@bash ./scripts/run_server.sh
 
-test: lint
-	@$(PYTEST)
+test:
+	@$(PYTEST) -q tests/
 
 lint:
 	@$(RUFF) check .
@@ -57,5 +57,5 @@ clean:
 distclean: clean
 	@rm -rf $(VENV)
 
-run-http:
-    @$(APPSCRIPTS)/run_http.sh
+runhttp:
+	@$(APPSCRIPTS)/run_http.sh

@@ -7,10 +7,11 @@ from typing import Any, Dict, List, Optional
 import json
 import re
 import glob
+
 from app.logging import redact_args
 
-
-SAFE_TAG = re.compile(r"[^a-zA-Z0-9:_\-]+")
+# Windows-safe: allow only letters, digits, underscore, hyphen, dot
+SAFE_TAG = re.compile(r"[^a-zA-Z0-9_.-]+")
 
 
 def _safe_tag(tag: str) -> str:
@@ -27,10 +28,10 @@ class ArtifactService:
     """
     Append/list NDJSON artifact records under the sandbox:
       .sandbox/<ARTIFACTS_SUBDIR>/<YYYY-MM>/<tag>-NNNN.ndjson
-
     Rotation: create a new file when current file exceeds max_bytes.
     Redaction: applies to all string fields in 'content' and 'meta'.
     """
+
     sandbox_root: Path
     subdir_name: str = "artifacts"
     max_bytes: int = 10_000_000  # ~10MB per file
@@ -39,7 +40,7 @@ class ArtifactService:
         self.base = (self.sandbox_root / self.subdir_name).resolve()
         self.base.mkdir(parents=True, exist_ok=True)
 
-    # ---------- Public API ----------
+    # ----- Public API -----
 
     def append(
         self,
@@ -65,11 +66,9 @@ class ArtifactService:
             "meta": self._redact_obj(meta) if meta is not None else None,
         }
 
-        # Determine current index file and rotate by size if needed
         path = self._ensure_current_file(month_dir, tag_safe)
         with path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
-
         return {"ok": True, "file": str(path), "ts": record["ts"]}
 
     def list(
@@ -83,26 +82,26 @@ class ArtifactService:
         tag_safe = _safe_tag(tag)
         files = self._files_for_tag(tag_safe, months_back=months_back)
         lines: List[str] = []
-        # Read newest files first for "desc"
+
         for fp in files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     file_lines = f.readlines()
-                    lines.extend(file_lines)
-                    if len(lines) >= limit:
-                        break
+                lines.extend(file_lines)
+                if len(lines) >= limit:
+                    break
             except FileNotFoundError:
                 continue
 
-        # Build records (take last N lines collected for desc)
         if order == "desc":
             chosen = list(reversed(lines))[:limit]
         else:
             chosen = lines[:limit]
+
         records = [json.loads(x) for x in chosen]
         return {"count": len(records), "records": records}
 
-    # ---------- Internals ----------
+    # ----- Internals -----
 
     def _month_dir(self, dt: Optional[datetime] = None) -> Path:
         dt = dt or datetime.now(timezone.utc)
@@ -123,38 +122,33 @@ class ArtifactService:
             return month_dir / f"{tag_safe}-0001.ndjson"
 
         if sz >= self.max_bytes:
-            # Rotate
             idx = int(current.stem.split("-")[-1])
-            next_idx = f"{idx+1:04d}"
+            next_idx = f"{idx + 1:04d}"
             return month_dir / f"{tag_safe}-{next_idx}.ndjson"
         return current
 
     def _files_for_tag(self, tag_safe: str, months_back: int) -> List[Path]:
-        # Scan current month back to N months, newest first
         files: List[Path] = []
         now = datetime.now(timezone.utc)
-        for k in range(months_back):
-            y = now.year
-            m = now.month - k
-            while m <= 0:
-                y -= 1
-                m += 12
+        y, m = now.year, now.month
+        for _ in range(months_back):
             month_dir = self.base / f"{y:04d}-{m:02d}"
-            # Add in reverse index order so newest file first
             idx_files = sorted(glob.glob(str(month_dir / f"{tag_safe}-*.ndjson")))
             if idx_files:
                 files.extend(reversed([Path(p) for p in idx_files]))
+            m -= 1
+            if m <= 0:
+                m = 12
+                y -= 1
         return files
 
     def _redact_obj(self, obj: Any) -> Any:
         if obj is None:
             return None
-        # Use existing redaction on dicts, but recurse on lists
         if isinstance(obj, dict):
             return redact_args(obj)
         if isinstance(obj, list):
             return [self._redact_obj(x) for x in obj]
-        # Pass-through primitives; redact only strings using redact_args helpers
         if isinstance(obj, str):
             return redact_args({"x": obj})["x"]
         return obj
