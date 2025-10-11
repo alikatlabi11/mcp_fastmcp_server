@@ -89,7 +89,7 @@ def build_tool_registry(container: Container) -> Dict[str, ToolSpec]:
     """
     
     handlers = ToolHandlers(container)
-    disabled = container.settings.disabled_tools
+    disabled = container.settings.disabled_tools()
     reg: Dict[str, ToolSpec] = {}
 
     def maybe_add(name: str, spec: ToolSpec):

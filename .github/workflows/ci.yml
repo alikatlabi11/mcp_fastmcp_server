@@ -26,11 +26,16 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
-      - name: Install
+      - name: Install dependencies
         run: |
-          make setup
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f pyproject.toml ]; then pip install poetry && poetry install; fi
 
       - name: Run tests & linters
         run: |
-          make test
+          pytest -v --cov=.
+          flake8 .
+          black --check .
+          isort --check-only .
+          mypy .

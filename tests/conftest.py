@@ -19,7 +19,7 @@ def _reload_http_app() -> object:
     import server.http_app as http_app  # type: ignore
 
     importlib.reload(http_app)
-    return http_app
+    return http_app.app
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def http_client(monkeypatch: pytest.MonkeyPatch, tmp_path) -> Iterator[TestClien
     monkeypatch.setenv("MCP_HTTP_ALLOWED_ORIGINS", "http://allowed.test, http://localhost")
 
     http_app = _reload_http_app()
-    client = TestClient(http_app.app)
+    client = TestClient(http_app)
     yield client
 
 

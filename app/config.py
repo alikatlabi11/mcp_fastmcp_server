@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Set
 from pydantic_settings import BaseSettings
 
+DISABLED_TOOLS: list[str] = ["artifact_log", "json_validate"]
 
 class Settings(BaseSettings):
     # Filesystem sandbox
@@ -33,12 +34,11 @@ class Settings(BaseSettings):
     # Artifacts (append-only audit)
     ARTIFACTS_SUBDIR: str = "artifacts"  # under SANDBOX_ROOT
     ARTIFACT_MAX_BYTES: int = 10_000_000  # rotate when file exceeds this size
-    
-    DISABLED_TOOLS: str = "artifact_log,json_validate"
-    
-    @property
-    def disabled_tools(self) -> Set[str]:
-        return {t.strip() for t in self.DISABLED_TOOLS.split(",") if t.strip()}
+
+    @classmethod
+    def disabled_tools(cls) -> Set[str]:
+        return set(DISABLED_TOOLS)
 
     class Config:
         env_file = ".env"
+        extra = "ignore"  # Allow extra fields to be ignored instead of forbidden
