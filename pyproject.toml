@@ -7,8 +7,8 @@ name = "acme-mcp-server"
 version = "0.1.0"
 description = "MCP server (FastMCP, stdio) exposing safe, production-minded tools"
 readme = "README.md"
-requires-python = ">=3.11"
-license = { text = "MIT" }
+requires-python = ">=3.11,<4.0"
+license = "MIT"
 authors = [{ name = "Ali katlabi", email = "ali.katlabi@shell.com" }]
 
 # Runtime deps (server only)

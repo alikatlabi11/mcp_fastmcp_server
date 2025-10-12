@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     def disabled_tools(cls) -> Set[str]:
         return set(DISABLED_TOOLS)
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"  # Allow extra fields to be ignored instead of forbidden
+    model_config = {
+        "env_file": ".env",
+        "extra": "ignore"  # Allow extra fields to be ignored instead of forbidden
+    }
