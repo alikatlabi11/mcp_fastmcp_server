@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Type
 
 from pydantic import BaseModel
 
-from app.di import Container
+from core.di import Container
 from server.tools.artifacts import ArtifactListIn, ArtifactLogIn
 
 # Import only the Pydantic input models (no business logic here)

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.services.filesystem import FileSystemService
+from core.services.filesystem import FileSystemService
 
 
 def test_fs_sandbox_prevents_escape(tmp_path: Path):

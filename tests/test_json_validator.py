@@ -1,5 +1,5 @@
 # tests/test_json_validate.py
-from app.services.validator import JsonValidatorService
+from core.services.validator import JsonValidatorService
 
 
 def test_json_validate_ok():

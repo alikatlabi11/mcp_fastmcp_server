@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from app.logging import redact_args
+from core.logging import redact_args
 
 # Windows-safe: allow only letters, digits, underscore, hyphen, dot
 SAFE_TAG = re.compile(r"[^a-zA-Z0-9_.-]+")

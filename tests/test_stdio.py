@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from app.config import Settings
+from core.config import Settings
 
 pytestmark = pytest.mark.asyncio
 

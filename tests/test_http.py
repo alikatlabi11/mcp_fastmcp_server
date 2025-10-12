@@ -6,7 +6,7 @@ from typing import Any, Dict, Set
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import Settings
+from core.config import Settings
 
 
 def _reload_http_with_env(monkeypatch: pytest.MonkeyPatch, env: Dict[str, str]) -> TestClient:

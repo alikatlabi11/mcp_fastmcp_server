@@ -1,12 +1,12 @@
 # app/di.py
 from dataclasses import dataclass
 
-from app.config import Settings
-from app.services.artifacts import ArtifactService
-from app.services.filesystem import FileSystemService
-from app.services.httpclient import SafeHttpConfig, SafeHttpService
-from app.services.kvstore import KvService
-from app.services.validator import JsonValidatorService
+from core.config import Settings
+from core.services.artifacts import ArtifactService
+from core.services.filesystem import FileSystemService
+from core.services.httpclient import SafeHttpConfig, SafeHttpService
+from core.services.kvstore import KvService
+from core.services.validator import JsonValidatorService
 
 
 @dataclass

@@ -1,7 +1,7 @@
 # tests/test_artifacts.py
 from pathlib import Path
 
-from app.services.artifacts import ArtifactService
+from core.services.artifacts import ArtifactService
 
 # tests/test_artifacts.py (optional debugging aid)
 

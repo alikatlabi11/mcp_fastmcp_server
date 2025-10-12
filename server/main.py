@@ -1,7 +1,7 @@
 # server/main.py
 from fastmcp import FastMCP
 
-from app.di import build_container
+from core.di import build_container
 from server.registry import build_tool_registry, register_into_fastmcp
 
 

@@ -6,8 +6,8 @@ from typing import Any, Dict
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.config import Settings
-from app.di import build_container
+from core.config import Settings
+from core.di import build_container
 from server.registry import (
     build_tool_registry,
     dispatch_tool_call,

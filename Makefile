@@ -38,7 +38,7 @@ run:
 	@bash ./scripts/run_server.sh
 
 test:
-	@$(PYTEST) -q tests/
+	@$(PYTEST) tests/ -v 
 
 lint:
 	@$(RUFF) check .

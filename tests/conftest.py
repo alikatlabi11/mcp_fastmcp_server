@@ -50,7 +50,7 @@ def registry_snapshot(monkeypatch: pytest.MonkeyPatch, tmp_path) -> Dict[str, Di
     """
     monkeypatch.setenv("SANDBOX_ROOT", str(tmp_path))
     monkeypatch.setenv("REDIS_URL", "")  # disable kv
-    from app.di import build_container
+    from core.di import build_container
     from server.registry import build_tool_registry
 
     container = build_container()
