@@ -44,7 +44,7 @@ dev = [
 
 [tool.setuptools]
 # Packages are simple dirs with __init__.py; no src-layout for now.
-packages = ["server", "app", "app.services"]
+packages = ["server", "core", "core.services"]
 
 [tool.ruff]
 line-length = 100
