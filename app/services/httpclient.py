@@ -295,11 +295,12 @@ class SafeHttpService:
         method: str = "GET",
         headers: Optional[Dict[str, str]] = None,
         body: Optional[bytes | str] = None,
-        want_text: bool = True,  # decode to text (UTF-8/HTTP charset); else return bytes (truncated)
-        extract_readable: bool = True,  # for HTML, return 'extracted' text alongside raw/truncated body
+        want_text: bool = True,  # decode to text (UTF-8/HTTP charset)
+        extract_readable: bool = True,  # for HTML, return 'extracted' 
     ) -> Dict[str, object]:
         """
-        Safely fetch a URL with strict SSRF & content limits and return a compact, structured payload.
+        Safely fetch a URL with strict SSRF & content limits and return a compact, 
+        structured payload.
 
         Returns:
             {
@@ -336,7 +337,8 @@ class SafeHttpService:
             max_connections=self.cfg.max_connections,
         )
 
-        verify_ssl = self.cfg.verify_ssl
+        # verify_ssl = self.cfg.verify_ssl
+        
         # verify: True (system trust), False (insecure), or str path to CA bundle
 
         # Stream + follow redirects

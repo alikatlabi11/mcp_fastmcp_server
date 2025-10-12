@@ -54,7 +54,7 @@ def test_tools_list_contains_expected(
     body = r.json()
     tools = body["result"]["tools"]
     names_http: Set[str] = {t["name"] for t in tools}
-    #names_registry: Set[str] = set(registry_snapshot.keys())
+    # names_registry: Set[str] = set(registry_snapshot.keys())
     all_tools_set = set(
         ["fs_write", "fs_read", "json_validate", "artifact_log", "artifact_list", "http_fetch"]
     )

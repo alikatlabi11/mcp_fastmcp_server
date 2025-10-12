@@ -43,5 +43,5 @@ class Settings(BaseSettings):
 
     model_config = {
         "env_file": ".env",
-        "extra": "ignore"  # Allow extra fields to be ignored instead of forbidden
+        "extra": "ignore",  # Allow extra fields to be ignored instead of forbidden
     }
